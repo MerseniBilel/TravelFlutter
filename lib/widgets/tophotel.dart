@@ -13,7 +13,6 @@ class _TopHotelsState extends State<TopHotels> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     HotelService.gethotels().then((value) {
       setState(() {
