@@ -16,7 +16,6 @@ class _TopCitiesState extends State<TopCities> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _loading = true;
     CityService.getcities().then((value) {
