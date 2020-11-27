@@ -1,8 +1,10 @@
+import 'package:Testapi/model/booking.dart';
 import 'package:credit_card/credit_card_form.dart';
 import 'package:credit_card/credit_card_model.dart';
 import 'package:credit_card/credit_card_widget.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:overlay_support/overlay_support.dart';
 // ignore: must_be_immutable
 
 class Hoteldetails extends StatelessWidget {
@@ -155,7 +157,7 @@ class Hoteldetails extends StatelessWidget {
                         color: Colors.pink[300],
                         borderRadius: BorderRadius.circular(16.0),
                       ),
-                      child: BookButton(),
+                      child: BookButton(id: id),
                     ),
                   ],
                 ),
@@ -228,7 +230,10 @@ class Rating extends StatelessWidget {
 class BookButton extends StatelessWidget {
   const BookButton({
     Key key,
+    this.id,
   }) : super(key: key);
+
+  final int id;
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +241,7 @@ class BookButton extends StatelessWidget {
       showModalBottomSheet(
           context: context,
           builder: (BuildContext context) {
-            return Payment();
+            return Payment(hotelid: id);
           });
     }
 
@@ -258,12 +263,30 @@ class BookButton extends StatelessWidget {
 }
 
 class Payment extends StatefulWidget {
-  const Payment({
-    Key key,
-  }) : super(key: key);
-
+  const Payment({Key key, this.hotelid}) : super(key: key);
+  final int hotelid;
   @override
-  _PaymentState createState() => _PaymentState();
+  _PaymentState createState() => _PaymentState(hotelid);
+}
+
+Future<BookingMoodel> CreateBooking(String cardNumber, String expiryDate,
+    String cardHolderName, String cvvCode, String hotelid, context) async {
+  final String url = "http://10.0.2.2:8000/api/bookings";
+  final http.Response response = await http.post(url, body: {
+    "email": cardHolderName,
+    "creditcard": cardNumber,
+    "cvv": cvvCode,
+    "expirationdate": expiryDate,
+    "hotel_id": hotelid
+  });
+
+  if (response.statusCode == 201) {
+    final String bodyString = response.body;
+    print(bodyString);
+    showSimpleNotification(
+        Text("Your Request has been sent successfully CHECK YOUR EMAIL"),
+        background: Colors.green);
+  }
 }
 
 class _PaymentState extends State<Payment> {
@@ -272,6 +295,8 @@ class _PaymentState extends State<Payment> {
   String cardHolderName = '';
   String cvvCode = '';
   bool isCvvFocused = false;
+  _PaymentState(this.hotelid);
+  final int hotelid;
 
   @override
   Widget build(BuildContext context) {
@@ -309,11 +334,15 @@ class _PaymentState extends State<Payment> {
                         color: Colors.pink,
                       ),
                       child: FlatButton(
-                        onPressed: () {
+                        onPressed: () async {
                           print(cardHolderName);
                           print(cardNumber);
                           print(expiryDate);
+                          print(hotelid);
                           print(cvvCode);
+
+                          CreateBooking(cardNumber, expiryDate, cardHolderName,
+                              cvvCode, hotelid.toString(), context);
                         },
                         child: Text(
                           'Book',

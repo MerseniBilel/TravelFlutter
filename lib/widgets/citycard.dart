@@ -15,7 +15,13 @@ class Citycard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => CityDetails()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => CityDetails(
+                    id: city.id,
+                    name: city.name,
+                    imgurl: city.imageurl,
+                    description: city.description)));
       },
       child: Container(
         margin: EdgeInsets.only(right: 10.0),

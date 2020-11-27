@@ -27,7 +27,7 @@ class _TopHotelsState extends State<TopHotels> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
       ),
-      height: 260,
+      height: MediaQuery.of(context).size.height * 0.31,
       child: ListView.builder(
         itemCount: hotels == null ? 0 : hotels.length,
         shrinkWrap: true,
